@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Step 6 — Project Structure · Spring Boot</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,400;0,600;1,300&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f1117;
+    --surface: #161b27;
+    --surface2: #1e2535;
+    --border: #2a3147;
+    --text: #e8eaf0;
+    --muted: #7b8499;
+    --faint: #3d4560;
+    --green: #4ade80;
+    --green-dim: #1a3d2b;
+    --green-text: #86efac;
+    --amber: #fbbf24;
+    --amber-dim: #3d2e08;
+    --blue: #60a5fa;
+    --blue-dim: #0f2040;
+    --coral: #f87171;
+    --coral-dim: #3d1212;
+    --purple: #a78bfa;
+    --purple-dim: #1e1440;
+    --teal: #2dd4bf;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Fraunces', Georgia, serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.75;
+  }
+
+  /* ── top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 40px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .step-badge {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    background: var(--green-dim);
+    color: var(--green);
+    border: 1px solid var(--green);
+    border-radius: 4px;
+    padding: 2px 8px;
+    letter-spacing: .05em;
+  }
+  .topbar-title {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--muted);
+  }
+  .topbar-title strong { color: var(--text); font-weight: 400; }
+
+  /* ── layout ── */
+  .page { max-width: 860px; margin: 0 auto; padding: 60px 40px 120px; }
+
+  /* ── hero ── */
+  .hero { margin-bottom: 60px; }
+  .hero-eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green);
+    letter-spacing: .1em;
+    margin-bottom: 14px;
+  }
+  .hero h1 {
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 300;
+    line-height: 1.15;
+    letter-spacing: -.02em;
+    margin-bottom: 20px;
+  }
+  .hero h1 em { font-style: italic; color: var(--muted); }
+  .hero-lead {
+    font-size: 18px;
+    font-weight: 300;
+    color: var(--muted);
+    max-width: 560px;
+    line-height: 1.8;
+  }
+  .hero-lead strong { color: var(--text); font-weight: 400; }
+
+  /* ── section ── */
+  .section { margin-bottom: 64px; }
+  .section-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+  h2 {
+    font-size: 24px;
+    font-weight: 400;
+    margin-bottom: 16px;
+    letter-spacing: -.01em;
+  }
+  p { color: var(--muted); margin-bottom: 14px; font-size: 16px; }
+  p strong { color: var(--text); font-weight: 400; }
+
+  /* ── file tree ── */
+  .tree-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 16px;
+  }
+  .tree-topbar {
+    padding: 12px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .dot-r { background: #ff5f57; }
+  .dot-y { background: #febc2e; }
+  .dot-g { background: #28c840; }
+  .tree-topbar span {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: 8px;
+  }
+  .tree-body { padding: 20px; display: flex; gap: 0; }
+  .tree-left { flex: 1; min-width: 0; }
+  .tree-detail {
+    width: 280px;
+    flex-shrink: 0;
+    border-left: 1px solid var(--border);
+    padding-left: 20px;
+    margin-left: 20px;
+  }
+  .tree-detail-inner {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px 16px;
+    min-height: 120px;
+  }
+  .tree-detail-inner .d-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--green);
+    margin-bottom: 8px;
+  }
+  .tree-detail-inner .d-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    color: var(--text);
+    margin-bottom: 10px;
+  }
+  .tree-detail-inner .d-desc {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.7;
+  }
+  .tree-detail-inner .d-desc strong { color: var(--text); font-weight: 400; }
+
+  /* tree nodes */
+  .tree-node {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1;
+    padding: 6px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: background 0.12s;
+    user-select: none;
+    white-space: nowrap;
+  }
+  .tree-node:hover { background: var(--surface2); }
+  .tree-node.selected { background: var(--green-dim); }
+  .tree-node .indent { display: inline-block; width: var(--d, 0px); flex-shrink: 0; }
+  .tree-node .icon { font-size: 14px; flex-shrink: 0; }
+  .tree-node .name { color: var(--text); }
+  .tree-node .name.folder { color: var(--blue); }
+  .tree-node .name.java { color: var(--green-text); }
+  .tree-node .name.xml { color: var(--amber); }
+  .tree-node .name.props { color: var(--teal); }
+  .tree-node .name.dim { color: var(--faint); }
+
+  /* ── pattern box ── */
+  .pattern-box {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  .pattern-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: .08em;
+    margin-bottom: 16px;
+  }
+  .pattern-rows { display: flex; flex-direction: column; gap: 8px; }
+  .pattern-row {
+    display: grid;
+    grid-template-columns: 130px 160px 1fr;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    transition: border-color 0.15s;
+  }
+  .pattern-row:hover { border-color: var(--faint); }
+  .pattern-row.selected { border-color: var(--green); }
+  .pattern-row .layer-tag {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-align: center;
+  }
+  .tag-model  { background: var(--purple-dim); color: var(--purple); border: 1px solid var(--purple); }
+  .tag-repo   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid var(--blue);   }
+  .tag-svc    { background: var(--amber-dim);   color: var(--amber);  border: 1px solid var(--amber);  }
+  .tag-ctrl   { background: var(--coral-dim);   color: var(--coral);  border: 1px solid var(--coral);  }
+  .pattern-row .file-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    color: var(--green-text);
+  }
+  .pattern-row .q {
+    font-family: 'Fraunces', serif;
+    font-size: 13px;
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* ── golden rule diagram ── */
+  .golden-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 32px 28px;
+    margin-bottom: 16px;
+  }
+  .golden-flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+  }
+  .layer-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 14px 20px;
+    border-radius: 10px;
+    border: 1px solid;
+    min-width: 110px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.15s;
+  }
+  .layer-box:hover { transform: translateY(-2px); }
+  .layer-box.ctrl  { background: var(--coral-dim);  border-color: var(--coral);  }
+  .layer-box.svc   { background: var(--amber-dim);  border-color: var(--amber);  }
+  .layer-box.repo  { background: var(--blue-dim);   border-color: var(--blue);   }
+  .layer-box.db    { background: var(--surface2);   border-color: var(--border); }
+  .layer-box .lb-icon { font-size: 20px; }
+  .layer-box .lb-name {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .lb-name.ctrl  { color: var(--coral);  }
+  .lb-name.svc   { color: var(--amber);  }
+  .lb-name.repo  { color: var(--blue);   }
+  .lb-name.db    { color: var(--muted);  }
+  .layer-box .lb-sub {
+    font-family: 'Fraunces', serif;
+    font-size: 11px;
+    font-style: italic;
+    color: var(--muted);
+  }
+  .arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 6px;
+    color: var(--faint);
+    font-size: 18px;
+  }
+  .layer-desc {
+    background: var(--surface2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 14px;
+    color: var(--muted);
+    min-height: 60px;
+    transition: all 0.2s;
+    font-family: 'Fraunces', serif;
+    line-height: 1.7;
+  }
+  .layer-desc strong { color: var(--text); font-weight: 400; }
+
+  /* analogy */
+  .analogy {
+    background: var(--surface2);
+    border-left: 3px solid var(--amber);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 20px;
+    margin-top: 20px;
+  }
+  .analogy-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--amber);
+    letter-spacing: .08em;
+    margin-bottom: 6px;
+  }
+  .analogy p { font-size: 15px; color: var(--muted); margin: 0; }
+
+  /* ── code snippet ── */
+  .code-block {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px 22px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    line-height: 1.9;
+    overflow-x: auto;
+    margin-bottom: 16px;
+  }
+  .code-block .c-folder { color: var(--blue); }
+  .code-block .c-java   { color: var(--green-text); }
+  .code-block .c-comment { color: var(--faint); }
+  .code-block .c-arrow  { color: var(--muted); }
+
+  /* ── callout ── */
+  .callout {
+    background: var(--green-dim);
+    border: 1px solid var(--green);
+    border-radius: 10px;
+    padding: 18px 22px;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 16px;
+  }
+  .callout-icon { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+  .callout-text { font-size: 15px; color: var(--green-text); line-height: 1.7; font-family: 'Fraunces', serif; }
+  .callout-text strong { color: var(--green); font-weight: 600; }
+
+  /* ── next step CTA ── */
+  .cta {
+    margin-top: 64px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 32px 36px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .cta-left h3 { font-size: 20px; font-weight: 300; margin-bottom: 6px; }
+  .cta-left p  { font-size: 14px; color: var(--muted); margin: 0; }
+  .cta-btn {
+    background: var(--green);
+    color: #0a1f14;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    letter-spacing: .03em;
+    transition: opacity 0.15s;
+  }
+  .cta-btn:hover { opacity: .85; }
+
+  /* ── progress bar ── */
+  .progress-bar {
+    width: 100%;
+    height: 3px;
+    background: var(--surface2);
+    margin-bottom: 40px;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 60%;
+    background: linear-gradient(90deg, var(--green) 0%, var(--teal) 100%);
+    border-radius: 2px;
+  }
+
+  @media (max-width: 600px) {
+    .page { padding: 32px 20px 80px; }
+    .topbar { padding: 12px 20px; }
+    .tree-body { flex-direction: column; }
+    .tree-detail { width: 100%; border-left: none; border-top: 1px solid var(--border); padding-left: 0; padding-top: 16px; margin-left: 0; margin-top: 12px; }
+    .golden-flow { gap: 4px; }
+    .layer-box { min-width: 80px; padding: 10px 12px; }
+    .pattern-row { grid-template-columns: 1fr 1fr; grid-template-rows: auto auto; }
+    .pattern-row .q { grid-column: 1 / -1; }
+    .cta { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+<!-- top bar -->
+<div class="topbar">
+  <span class="step-badge">STEP 6 / 10</span>
+  <span class="topbar-title">Spring Boot Crash Course &nbsp;·&nbsp; <strong>Project Structure</strong></span>
+</div>
+
+<div class="page">
+
+  <!-- progress -->
+  <div class="progress-bar"><div class="progress-fill"></div></div>
+
+  <!-- hero -->
+  <div class="hero">
+    <div class="hero-eyebrow">STEP 6 — PROJECT STRUCTURE</div>
+    <h1>Where does<br /><em>everything</em> go?</h1>
+    <p class="hero-lead">Most beginners <strong>ignore the folder structure</strong> and later get confused about where to put things. Let's fix that now — once, clearly, for good.</p>
+  </div>
+
+  <!-- file tree -->
+  <div class="section">
+    <div class="section-label">The full structure</div>
+    <h2>Every file and what it does</h2>
+    <p>Click any file or folder below to see exactly what it does and when you create it.</p>
+
+    <div class="tree-wrap">
+      <div class="tree-topbar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <span>my-shop/</span>
+      </div>
+      <div class="tree-body">
+        <div class="tree-left" id="tree"></div>
+        <div class="tree-detail">
+          <div class="tree-detail-inner" id="tree-detail">
+            <div class="d-label">← select a file</div>
+            <div class="d-desc" style="margin-top:8px">Click any item in the tree to see what it does.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- four-file pattern -->
+  <div class="section">
+    <div class="section-label">The golden pattern</div>
+    <h2>Four files. Every feature. Always.</h2>
+    <p>This is <strong>the single most important rule</strong> about Spring Boot structure. Every feature you build follows the same four-file pattern — no exceptions.</p>
+
+    <div class="callout">
+      <span class="callout-icon">💡</span>
+      <div class="callout-text">If you add <strong>Orders</strong> to your shop tomorrow, you create exactly the same four files: <strong>Order.java</strong>, <strong>OrderRepository.java</strong>, <strong>OrderService.java</strong>, <strong>OrderController.java</strong>. Same pattern, every time.</div>
+    </div>
+
+    <div class="pattern-box">
+      <div class="pattern-title">// click a row to understand each layer</div>
+      <div class="pattern-rows" id="pattern-rows">
+        <div class="pattern-row" data-layer="model">
+          <span class="layer-tag tag-model">model/</span>
+          <span class="file-name">Product.java</span>
+          <span class="q">What does the data look like?</span>
+        </div>
+        <div class="pattern-row" data-layer="repo">
+          <span class="layer-tag tag-repo">repository/</span>
+          <span class="file-name">ProductRepository.java</span>
+          <span class="q">How do we store / fetch it?</span>
+        </div>
+        <div class="pattern-row" data-layer="service">
+          <span class="layer-tag tag-svc">service/</span>
+          <span class="file-name">ProductService.java</span>
+          <span class="q">What are the business rules?</span>
+        </div>
+        <div class="pattern-row" data-layer="controller">
+          <span class="layer-tag tag-ctrl">controller/</span>
+          <span class="file-name">ProductController.java</span>
+          <span class="q">How does the outside world access it?</span>
+        </div>
+      </div>
+    </div>
+    <div class="layer-desc" id="layer-desc">Select a row above to see what each layer is responsible for.</div>
+  </div>
+
+  <!-- golden rule -->
+  <div class="section">
+    <div class="section-label">The golden rule</div>
+    <h2>What talks to what</h2>
+    <p>Each layer has <strong>one job</strong>. It can only talk to the layer directly below it. Click a layer to see what it's allowed to do.</p>
+
+    <div class="golden-wrap">
+      <div class="golden-flow">
+        <div class="layer-box ctrl" data-layer="ctrl">
+          <span class="lb-icon">🌐</span>
+          <span class="lb-name ctrl">Controller</span>
+          <span class="lb-sub">HTTP in/out</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="layer-box svc" data-layer="svc">
+          <span class="lb-icon">⚙️</span>
+          <span class="lb-name svc">Service</span>
+          <span class="lb-sub">business logic</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="layer-box repo" data-layer="repo">
+          <span class="lb-icon">📦</span>
+          <span class="lb-name repo">Repository</span>
+          <span class="lb-sub">data access</span>
+        </div>
+        <div class="arrow">→</div>
+        <div class="layer-box db" data-layer="db">
+          <span class="lb-icon">🗄️</span>
+          <span class="lb-name db">Database</span>
+          <span class="lb-sub">MySQL / H2</span>
+        </div>
+      </div>
+      <div class="layer-desc" id="golden-desc">Click a layer above to see its rules.</div>
+
+      <div class="analogy">
+        <div class="analogy-label">ANALOGY</div>
+        <p>Think of it like a company — <strong>the receptionist doesn't go into the warehouse</strong>, and <strong>the warehouse doesn't answer customer calls</strong>. Each person stays in their lane.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- code reference -->
+  <div class="section">
+    <div class="section-label">Quick reference</div>
+    <h2>The structure at a glance</h2>
+    <div class="code-block">
+<span class="c-folder">src/main/java/com/shop/</span>
+├── <span class="c-folder">model/</span>
+│   └── <span class="c-java">Product.java</span>          <span class="c-comment">← your data shape (fields, getters)</span>
+├── <span class="c-folder">repository/</span>
+│   └── <span class="c-java">ProductRepository.java</span> <span class="c-comment">← extends JpaRepository</span>
+├── <span class="c-folder">service/</span>
+│   └── <span class="c-java">ProductService.java</span>    <span class="c-comment">← business rules live here</span>
+├── <span class="c-folder">controller/</span>
+│   └── <span class="c-java">ProductController.java</span> <span class="c-comment">← @RestController, @GetMapping…</span>
+└── <span class="c-java">MyShopApplication.java</span>   <span class="c-comment">← the entry point (don't touch!)</span>
+    </div>
+
+    <div class="callout">
+      <span class="callout-icon">✅</span>
+      <div class="callout-text"><strong>You're done with structure.</strong> From here on, every Spring Boot project you ever write will follow this exact pattern. It becomes muscle memory fast.</div>
+    </div>
+  </div>
+
+  <!-- CTA -->
+  <div class="cta">
+    <div class="cta-left">
+      <h3>Ready for Step 7?</h3>
+      <p>Writing your first controller — line by line, no magic left unexplained.</p>
+    </div>
+    <button class="cta-btn" onclick="goNext()">Step 7 — First Controller →</button>
+  </div>
+
+</div>
+
+<script>
+const treeData = [
+  { name: 'src/', type: 'folder', depth: 0, key: 'src' },
+  { name: 'main/', type: 'folder', depth: 1, key: 'main' },
+  { name: 'java/', type: 'folder', depth: 2, key: 'java' },
+  { name: 'com/shop/', type: 'folder', depth: 3, key: 'comshop' },
+  { name: 'model/', type: 'folder', depth: 4, key: 'model' },
+  { name: 'Product.java', type: 'java', depth: 5, key: 'product' },
+  { name: 'repository/', type: 'folder', depth: 4, key: 'repository' },
+  { name: 'ProductRepository.java', type: 'java', depth: 5, key: 'productrepo' },
+  { name: 'service/', type: 'folder', depth: 4, key: 'service' },
+  { name: 'ProductService.java', type: 'java', depth: 5, key: 'productservice' },
+  { name: 'controller/', type: 'folder', depth: 4, key: 'controller' },
+  { name: 'ProductController.java', type: 'java', depth: 5, key: 'productcontroller' },
+  { name: 'MyShopApplication.java', type: 'java', depth: 4, key: 'main-class' },
+  { name: 'resources/', type: 'folder', depth: 2, key: 'resources' },
+  { name: 'application.properties', type: 'props', depth: 3, key: 'appprops' },
+  { name: 'test/', type: 'folder', depth: 1, key: 'test' },
+  { name: 'pom.xml', type: 'xml', depth: 0, key: 'pom' },
+];
+
+const details = {
+  src: { label: 'src/', desc: 'All your source code lives here. You will <strong>never</strong> create files outside of <code>src/</code>.' },
+  main: { label: 'main/', desc: 'Your production code — everything that actually runs when your app starts.' },
+  java: { label: 'java/', desc: 'All Java source files live under here, organised by package.' },
+  comshop: { label: 'com/shop/', desc: 'Your root package. Think of it as your app\'s namespace — it groups all your classes together.' },
+  model: { label: 'model/', desc: '<strong>Put your data classes here.</strong> Each class represents a thing in your domain — Product, Order, User. These become your database tables.' },
+  product: { label: 'Product.java', desc: '<strong>Defines what a Product looks like.</strong> Has fields (id, name, price), getters, setters. Annotated with <code>@Entity</code> so Spring knows it maps to a DB table.' },
+  repository: { label: 'repository/', desc: '<strong>Database access layer.</strong> You put interfaces here that extend JpaRepository. Spring writes the SQL queries for you automatically.' },
+  productrepo: { label: 'ProductRepository.java', desc: '<strong>How you talk to the database.</strong> Extends <code>JpaRepository&lt;Product, Long&gt;</code> and immediately gives you findAll, findById, save, delete — for free.' },
+  service: { label: 'service/', desc: '<strong>Business logic lives here.</strong> Should a product be discounted? Can a user place an order? These decisions belong in the service, not anywhere else.' },
+  productservice: { label: 'ProductService.java', desc: '<strong>The brain of each feature.</strong> Talks to the Repository to get data, applies rules, then returns results. Annotated with <code>@Service</code>.' },
+  controller: { label: 'controller/', desc: '<strong>HTTP endpoints live here.</strong> This is the only layer that talks to the outside world. Each method handles one URL route.' },
+  productcontroller: { label: 'ProductController.java', desc: '<strong>Maps URLs to actions.</strong> Annotated with <code>@RestController</code>. Has methods like <code>getProduct()</code> annotated with <code>@GetMapping("/products/{id}")</code>.' },
+  'main-class': { label: 'MyShopApplication.java', desc: '<strong>The entry point.</strong> Contains <code>main()</code>. Spring Boot boots from here. You almost never touch this file after creation.' },
+  resources: { label: 'resources/', desc: 'Configuration files and static assets. Not Java code — things Spring reads at startup.' },
+  appprops: { label: 'application.properties', desc: '<strong>Your app\'s config file.</strong> Database URL, port number, credentials — all set here. No code recompile needed to change settings.' },
+  test: { label: 'test/', desc: 'Mirror of main/. Your test files go here, same package structure. Spring sets up a test context automatically.' },
+  pom: { label: 'pom.xml', desc: '<strong>Your dependency list.</strong> Add a Spring Boot starter here and Maven downloads it. This is how you add new features (JPA, Security, Web) to your project.' },
+};
+
+const layerDetails = {
+  model: '<strong>Model</strong> — defines the shape of your data. Fields, types, validations. No logic here, just structure. Spring uses this to create your database table automatically.',
+  repo: '<strong>Repository</strong> — your data access object. Extends JpaRepository and gets save, findAll, findById, delete for free. Never contains business logic — only DB calls.',
+  service: '<strong>Service</strong> — the brain. All business decisions live here: "Can this order be placed?", "Apply a 10% discount if quantity > 10." Talks only to Repository. Annotated with @Service.',
+  controller: '<strong>Controller</strong> — the front door. Receives HTTP requests, calls the Service, returns a response. Never talks to the Repository directly. Annotated with @RestController.',
+};
+
+const goldenDetails = {
+  ctrl: '<strong>Controller rules:</strong> Receives HTTP requests. Calls Service. Returns HTTP responses. <em>Never</em> calls Repository directly. <em>Never</em> puts business logic here — just routing.',
+  svc: '<strong>Service rules:</strong> All business logic lives here. Calls Repository to fetch or save data. <em>Never</em> handles HTTP. <em>Never</em> writes SQL. One job: make decisions.',
+  repo: '<strong>Repository rules:</strong> Only talks to the database. <em>Never</em> contains business logic. <em>Never</em> handles HTTP. Spring writes the SQL — you just call methods like findById().',
+  db: '<strong>Database:</strong> Stores everything. You never call the database directly from Java — that\'s what the Repository is for. Spring Boot uses H2 (in-memory) by default, swap to MySQL for production.',
+};
+
+// Build tree
+const treeEl = document.getElementById('tree');
+treeData.forEach(node => {
+  const div = document.createElement('div');
+  div.className = 'tree-node';
+  div.style.setProperty('--d', (node.depth * 18) + 'px');
+  const icon = node.type === 'folder' ? '📁' : node.type === 'java' ? '☕' : node.type === 'xml' ? '📄' : '⚙️';
+  const cls = node.type === 'folder' ? 'folder' : node.type === 'java' ? 'java' : node.type === 'xml' ? 'xml' : 'props';
+  div.innerHTML = `<span class="indent"></span><span class="icon">${icon}</span><span class="name ${cls}">${node.name}</span>`;
+  div.addEventListener('click', () => {
+    document.querySelectorAll('.tree-node').forEach(n => n.classList.remove('selected'));
+    div.classList.add('selected');
+    const d = details[node.key];
+    const det = document.getElementById('tree-detail');
+    if (d) {
+      det.innerHTML = `<div class="d-label">selected</div><div class="d-name">${d.label}</div><div class="d-desc">${d.desc}</div>`;
+    }
+  });
+  treeEl.appendChild(div);
+});
+
+// Pattern rows
+document.querySelectorAll('.pattern-row').forEach(row => {
+  row.addEventListener('click', () => {
+    document.querySelectorAll('.pattern-row').forEach(r => r.classList.remove('selected'));
+    row.classList.add('selected');
+    const layer = row.dataset.layer;
+    document.getElementById('layer-desc').innerHTML = layerDetails[layer] || '';
+  });
+});
+
+// Golden rule boxes
+document.querySelectorAll('.layer-box').forEach(box => {
+  box.addEventListener('click', () => {
+    const layer = box.dataset.layer;
+    document.getElementById('golden-desc').innerHTML = goldenDetails[layer] || '';
+  });
+});
+
+function goNext() {
+  alert('Step 7 — First Controller\n\nIn a full course, this would load the next lesson. For now, take this as confirmation: you\'ve completed Step 6!');
+}
+</script>
+</body>
+</html>
